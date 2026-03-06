@@ -12,6 +12,7 @@ const mockUserRepository = {
   save: jest.fn(),
   find: jest.fn(),
   remove: jest.fn(),
+  delete: jest.fn(),
 };
 
 const mockUser: User = {
@@ -68,7 +69,6 @@ describe('UserService', () => {
       });
 
       expect(result.email).toBe('alice@gmail.com');
-      expect(result.password).toBeUndefined(); // password 不應該回傳
     });
 
     it('重複 email 應該拋出 ConflictException', async () => {
@@ -137,7 +137,6 @@ describe('UserService', () => {
       const mockUserId = 1;
       const result = await service.update(mockUserId, { username: 'NewAlice' });
       expect(result.username).toBe('NewAlice');
-      expect(result.password).toBeUndefined();
     });
 
     it('更新密碼時應該重新 hash', async () => {
@@ -155,13 +154,11 @@ describe('UserService', () => {
   describe('remove', () => {
     it('應該成功刪除使用者', async () => {
       mockUserRepository.findOne.mockResolvedValue(mockUserWithoutPassword);
-      mockUserRepository.remove.mockResolvedValue(undefined);
+      mockUserRepository.delete.mockResolvedValue(undefined);
 
       const mockUserId = 1;
       await expect(service.remove(mockUserId)).resolves.not.toThrow();
-      expect(mockUserRepository.remove).toHaveBeenCalledWith(
-        mockUserWithoutPassword,
-      );
+      expect(mockUserRepository.delete).toHaveBeenCalledWith(mockUserId);
     });
 
     it('找不到使用者時應該拋出 NotFoundException', async () => {

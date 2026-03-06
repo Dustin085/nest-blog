@@ -9,6 +9,7 @@ import { User } from 'src/user/user.entity';
 import { Repository } from 'typeorm';
 import bcrypt from 'bcrypt';
 import { UpdateUserDto } from 'src/user/dto/update-user.dto';
+import { SafeUser } from 'src/user/user.types';
 
 /*
   目前是直接使用 typeorm 提供的 Repo ，大專案可以再自行多封裝一層 UserRepository
@@ -21,7 +22,7 @@ export class UserService {
     private userRepository: Repository<User>,
   ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
+  async create(createUserDto: CreateUserDto): Promise<SafeUser> {
     // 檢查是否已註冊過
     const existing = await this.userRepository.findOne({
       where: { email: createUserDto.email },
@@ -44,21 +45,30 @@ export class UserService {
     return this.findOne(saved.id);
   }
 
-  async findAll(): Promise<User[]> {
+  async findAll(): Promise<SafeUser[]> {
     return this.userRepository.find();
   }
 
-  async findOne(id: number): Promise<User> {
+  async findOne(id: number): Promise<SafeUser> {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) throw new NotFoundException(`找不到 id 為 ${id} 的使用者`);
     return user;
   }
 
-  async findByEmail(email: string): Promise<User | null> {
+  async findByEmail(email: string): Promise<SafeUser | null> {
     return this.userRepository.findOne({ where: { email } });
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
+  // 會明確取出使用者的 password，可用來做密碼驗證
+  async findByEmailWithPassword(email: string): Promise<User | null> {
+    return this.userRepository
+      .createQueryBuilder('user')
+      .addSelect('user.password')
+      .where('user.email = :email', { email })
+      .getOne();
+  }
+
+  async update(id: number, updateUserDto: UpdateUserDto): Promise<SafeUser> {
     const user = await this.findOne(id);
 
     if (updateUserDto.password) {
@@ -73,7 +83,8 @@ export class UserService {
   }
 
   async remove(id: number): Promise<void> {
-    const user = await this.findOne(id);
-    await this.userRepository.remove(user);
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) throw new NotFoundException(`找不到 id 為 ${id} 的使用者`);
+    await this.userRepository.delete(id);
   }
 }
