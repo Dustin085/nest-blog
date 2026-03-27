@@ -30,12 +30,12 @@ export class Post {
 
   // eager: true 時會自動帶出關聯的 User，
   // onDelete: 'CASCADE' => (User 被刪除時他的所有 posts 也會被刪除)
-  @ManyToOne(() => User, { eager: true, onDelete: 'CASCADE' })
+  @ManyToOne(() => User, { eager: false, onDelete: 'CASCADE' })
   // 以 authorId 為外鍵名稱，實際上 table 上會看到 authorId (FK → User.id)
   @JoinColumn({ name: 'authorId' })
   author: User;
 
-  @Column()
+  @Column({ select: false }) // 可透過 post.author.id 取得
   authorId: number;
 
   @CreateDateColumn()

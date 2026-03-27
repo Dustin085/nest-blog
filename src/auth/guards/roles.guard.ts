@@ -8,7 +8,12 @@ export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const roles = this.reflector.get<UserRole[]>('roles', context.getHandler());
+    // context.getHandler() => 執行路徑上的 method，例如 @Get(':id') findOne()的 findOne
+    // context.getClass() => controller 本身
+    const roles = this.reflector.getAllAndOverride<UserRole[]>('roles', [
+      context.getHandler(),
+      context.getClass(),
+    ]);
     if (!roles) return true; // 沒設定 Roles => 不限制
 
     const request = context

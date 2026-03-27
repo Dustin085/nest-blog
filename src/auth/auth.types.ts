@@ -5,3 +5,7 @@ export interface JwtUser {
   email: string;
   role: UserRole;
 }
+
+export interface JwtUserWithRefreshToken extends JwtUser {
+  refreshToken: string;
+}

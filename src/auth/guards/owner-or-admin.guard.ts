@@ -4,6 +4,7 @@ import {
   ForbiddenException,
   Injectable,
 } from '@nestjs/common';
+import { Request } from 'express';
 import { JwtUser } from 'src/auth/auth.types';
 import { UserRole } from 'src/user/user.entity';
 

@@ -6,7 +6,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { PostStatus } from 'src/post/post.entity';
+import { PostStatus } from '../post.entity';
 
 export class CreatePostDto {
   @IsString()

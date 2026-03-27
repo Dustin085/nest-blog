@@ -10,13 +10,13 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { Roles } from 'src/auth/decorators/roles.decorator';
-import { OwnerOrAdminGuard } from 'src/auth/guards/owner-or-admin.guard';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { CreateUserDto } from 'src/user/dto/create-user.dto';
-import { UpdateUserDto } from 'src/user/dto/update-user.dto';
-import { UserRole } from 'src/user/user.entity';
-import { UserService } from 'src/user/user.service';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { OwnerOrAdminGuard } from '../auth/guards/owner-or-admin.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { UserRole } from './user.entity';
+import { UserService } from './user.service';
 
 @Controller('user')
 export class UserController {

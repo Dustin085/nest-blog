@@ -29,6 +29,9 @@ export class User {
   @Column({ type: 'enum', enum: UserRole, default: UserRole.READER })
   role: UserRole;
 
+  @Column({ type: 'text', nullable: true, select: false })
+  refreshToken: string | null;
+
   @CreateDateColumn()
   createdAt: Date;
 
